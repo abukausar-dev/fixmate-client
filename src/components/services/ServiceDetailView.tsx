@@ -15,7 +15,7 @@ import {
     Info,
     Lock,
 } from "lucide-react";
-import { toast } from "sonner";
+import { RequestRepairModal } from "@/components/services/RequestRepairModal";
 import { useSession } from "@/lib/auth-client";
 import { apiPublicFetch, ApiClientError } from "@/lib/api-client";
 import type { ServiceDetail } from "@/types/service";
@@ -28,8 +28,11 @@ export function ServiceDetailView({ serviceId }: { serviceId: string }) {
     const [service, setService] = useState<ServiceDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [notFoundError, setNotFoundError] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
-    const user = session?.user as { role?: string; name?: string } | undefined;
+    const user = session?.user as
+        | { role?: string; name?: string; email?: string; phone?: string }
+        | undefined;
     const userRole = user?.role;
 
     useEffect(() => {
@@ -275,11 +278,7 @@ export function ServiceDetailView({ serviceId }: { serviceId: string }) {
                         ) : userRole === "customer" ? (
                             <button
                                 type="button"
-                                onClick={() =>
-                                    toast.info(
-                                        "Request Repair booking form will be connected in Milestone 5!"
-                                    )
-                                }
+                                onClick={() => setModalOpen(true)}
                                 className="fm-navy-cta-bar group cursor-pointer text-left"
                             >
                                 <div>
@@ -343,6 +342,19 @@ export function ServiceDetailView({ serviceId }: { serviceId: string }) {
                     </div>
                 </motion.div>
             </div>
+            {/* Request Repair Modal (only mount when customer is logged in) */}
+            {user && userRole === "customer" && user.email && (
+                <RequestRepairModal
+                    isOpen={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                    service={service}
+                    customer={{
+                        name: user.name || "Customer",
+                        email: user.email,
+                        phone: user.phone,
+                    }}
+                />
+            )}
         </div>
     );
 }
