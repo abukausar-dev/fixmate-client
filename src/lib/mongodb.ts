@@ -1,4 +1,4 @@
-import { MongoClient, type Db } from "mongodb";
+import { MongoClient, ServerApiVersion, type Db } from "mongodb";
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME || "fixmate";
@@ -11,8 +11,17 @@ const globalForMongo = globalThis as unknown as {
     _fixmateMongoClient?: MongoClient;
 };
 
-export const mongoClient =
-    globalForMongo._fixmateMongoClient ?? new MongoClient(uri);
+export const mongoClient: MongoClient =
+    globalForMongo._fixmateMongoClient ??
+    new MongoClient(uri, {
+        family: 4,
+        serverSelectionTimeoutMS: 30000,
+        serverApi: {
+            version: ServerApiVersion.v1,
+            strict: true,
+            deprecationErrors: true,
+        },
+    });
 
 if (process.env.NODE_ENV !== "production") {
     globalForMongo._fixmateMongoClient = mongoClient;

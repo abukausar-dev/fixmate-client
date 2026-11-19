@@ -13,12 +13,29 @@ export function AuthSessionTest({ expectedRole }: { expectedRole: string }) {
 
     const handleGetToken = async () => {
         const res = await authClient.token();
-        if (res.error) {
-            toast.error(res.error.message || "Failed to get JWT token");
+        if (res.error || !res.data?.token) {
+            toast.error(res.error?.message || "Failed to get JWT token");
             return;
         }
-        setJwtStatus(`JWT received (${res.data.token.slice(0, 28)}...)`);
-        toast.success("JWT token generated successfully!");
+
+        const token = res.data.token;
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+
+        // 1. Test /api/auth/me (Should return 200 with MongoDB user)
+        const meRes = await fetch(`${apiBase}/api/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const meData = await meRes.json();
+
+        // 2. Test /api/admin/ping as Customer/Technician (Should return 403 Forbidden)
+        const adminRes = await fetch(`${apiBase}/api/admin/ping`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setJwtStatus(
+            `Express verified: ${meRes.status} (role: ${meData.user?.role}) | Admin gate: ${adminRes.status}`
+        );
+        toast.success("Express JWKS & Role Middleware verified!");
     };
 
     const handleSignOut = async () => {

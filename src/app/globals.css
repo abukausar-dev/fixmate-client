@@ -128,3 +128,72 @@
     @apply font-sans;
   }
 }
+
+/* FixMate Reusable Design System Utilities (Tailwind v4 Safe) */
+:root {
+  --font-jakarta: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-inter: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--font-inter);
+}
+
+@layer components {
+  .fm-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .fm-card {
+    @apply rounded-3xl border border-slate-200/80 bg-white transition-all duration-200;
+    box-shadow: 0 8px 30px rgba(16, 43, 63, 0.04);
+  }
+
+  .fm-card-hover:hover {
+    transform: translateY(-2px);
+    border-color: rgba(23, 107, 114, 0.3);
+    box-shadow: 0 14px 36px rgba(16, 43, 63, 0.08);
+  }
+
+  .fm-bento-mint {
+    @apply rounded-3xl border border-emerald-200/60 bg-[#E3F5EE] text-[#102B3F];
+  }
+
+  .fm-bento-sky {
+    @apply rounded-3xl border border-cyan-200/60 bg-[#E0F2F7] text-[#102B3F];
+  }
+
+  .fm-bento-amber {
+    @apply rounded-3xl border border-amber-200/70 bg-[#FEF3C7] text-[#102B3F];
+  }
+
+  .fm-bento-navy {
+    @apply rounded-3xl bg-[#102B3F] text-white;
+    box-shadow: 0 12px 30px rgba(16, 43, 63, 0.16);
+  }
+
+  .fm-pill-nav {
+    @apply rounded-full border border-slate-200/80 bg-white/90 px-2 py-1.5 shadow-sm backdrop-blur-md;
+  }
+
+  .fm-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#176B72] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#102B3F] disabled:opacity-60;
+  }
+
+  .fm-btn-primary:active {
+    transform: scale(0.99);
+  }
+
+  .fm-btn-amber {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#F59E0B] px-6 py-2.5 text-sm font-semibold text-[#102B3F] shadow-sm transition-all hover:bg-[#D97706] hover:text-white;
+  }
+
+  .fm-btn-amber:active {
+    transform: scale(0.99);
+  }
+
+  .fm-heading {
+    font-family: var(--font-jakarta);
+    @apply tracking-tight text-[#102B3F];
+  }
+}
