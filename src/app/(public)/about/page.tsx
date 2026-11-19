@@ -51,13 +51,13 @@ export default function AboutPage() {
             {/* Hero Banner */}
             <section className="fm-card p-8 sm:p-12 lg:p-14">
                 <div className="max-w-3xl space-y-5">
-                    <span className="inline-flex items-center gap-2 rounded-full bg-[#E3F5EE] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#176B72]">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-[var(--fm-primary-soft)] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[var(--fm-primary-soft-text)]">
                         How FixMate Works
                     </span>
                     <h1 className="fm-heading text-3xl font-extrabold sm:text-5xl leading-tight">
                         Device & appliance repairs with zero upfront payment risk.
                     </h1>
-                    <p className="text-base leading-relaxed text-slate-600">
+                    <p className="text-base leading-relaxed text-[var(--fm-ink-soft)]">
                         In Bangladesh and worldwide, customers often hand over expensive
                         devices without knowing what is happening or paying before any work
                         is done. FixMate brings verified technicians, real-time job state
@@ -70,7 +70,7 @@ export default function AboutPage() {
                         </Link>
                         <Link
                             href="/sign-up"
-                            className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-[#102B3F] hover:bg-slate-50"
+                            className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-[var(--fm-surface)] px-6 py-2.5 text-sm font-semibold text-[#102B3F] hover:bg-slate-50"
                         >
                             Join as a Technician
                         </Link>
@@ -82,14 +82,14 @@ export default function AboutPage() {
             <section className="space-y-6">
                 <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-wider text-[#176B72]">
+                        <p className="text-xs font-bold uppercase tracking-wider text-[var(--fm-primary)]">
                             4-Stage Workflow
                         </p>
                         <h2 className="fm-heading mt-1 text-2xl font-extrabold sm:text-3xl">
                             From broken device to verified fix
                         </h2>
                     </div>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-[var(--fm-ink-soft)]">
                         Every status transition is server-enforced for complete safety.
                     </p>
                 </div>
@@ -103,7 +103,7 @@ export default function AboutPage() {
                                 className={`${item.tint} flex flex-col justify-between p-6 space-y-6`}
                             >
                                 <div className="flex items-center justify-between">
-                                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#176B72] shadow-sm">
+                                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--fm-surface)] text-[var(--fm-primary)] shadow-sm">
                                         <Icon className="h-6 w-6" />
                                     </span>
                                     <span className="fm-heading text-2xl font-extrabold opacity-40">
@@ -112,7 +112,7 @@ export default function AboutPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <h3 className="fm-heading text-lg font-bold">{item.title}</h3>
-                                    <p className="text-sm leading-relaxed text-slate-600">
+                                    <p className="text-sm leading-relaxed text-[var(--fm-ink-soft)]">
                                         {item.description}
                                     </p>
                                 </div>
@@ -124,50 +124,44 @@ export default function AboutPage() {
 
             {/* Trust Pillars */}
             <section className="fm-bento-navy p-8 sm:p-12">
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-                    <div className="flex items-start gap-4">
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-[#65D8C4]">
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-8">
+                    <div className="flex flex-col items-center text-center">
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--fm-surface)]/10 text-[#65D8C4]">
                             <ShieldCheck className="h-6 w-6" />
                         </span>
-                        <div>
-                            <h3 className="fm-heading text-lg font-bold text-white">
-                                Admin-Moderated Listings
-                            </h3>
-                            <p className="mt-1 text-sm text-slate-300">
-                                Every service created or edited by a technician is reviewed by
-                                an admin before appearing publicly.
-                            </p>
-                        </div>
+                        <h3 className="fm-heading mt-4 text-lg !text-white">
+                            Admin-Moderated Listings
+                        </h3>
+                        <p className="mt-2 max-w-xs text-sm leading-relaxed text-slate-300">
+                            Every service created or edited by a technician is reviewed by an
+                            admin before appearing publicly.
+                        </p>
                     </div>
 
-                    <div className="flex items-start gap-4">
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-[#F59E0B]">
+                    <div className="flex flex-col items-center text-center">
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--fm-surface)]/10 text-[#FFB020]">
                             <Clock className="h-6 w-6" />
                         </span>
-                        <div>
-                            <h3 className="fm-heading text-lg font-bold text-white">
-                                Strict Status Pipeline
-                            </h3>
-                            <p className="mt-1 text-sm text-slate-300">
-                                Jobs move forward one step at a time: Requested → Accepted → In
-                                Progress → Completed → Paid.
-                            </p>
-                        </div>
+                        <h3 className="fm-heading mt-4 text-lg !text-white">
+                            Strict Status Pipeline
+                        </h3>
+                        <p className="mt-2 max-w-xs text-sm leading-relaxed text-slate-300">
+                            Jobs move forward one step at a time: Requested → Accepted → In
+                            Progress → Completed → Paid.
+                        </p>
                     </div>
 
-                    <div className="flex items-start gap-4">
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-[#65D8C4]">
+                    <div className="flex flex-col items-center text-center">
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--fm-surface)]/10 text-[#65D8C4]">
                             <CheckCircle2 className="h-6 w-6" />
                         </span>
-                        <div>
-                            <h3 className="fm-heading text-lg font-bold text-white">
-                                Post-Completion Stripe Checkout
-                            </h3>
-                            <p className="mt-1 text-sm text-slate-300">
-                                The Pay Now button unlocks only when your technician completes
-                                the repair and sets the final amount.
-                            </p>
-                        </div>
+                        <h3 className="fm-heading mt-4 text-lg !text-white">
+                            Post-Completion Stripe Checkout
+                        </h3>
+                        <p className="mt-2 max-w-xs text-sm leading-relaxed text-slate-300">
+                            The Pay Now button unlocks only when your technician completes the
+                            repair and sets the final amount.
+                        </p>
                     </div>
                 </div>
             </section>

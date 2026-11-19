@@ -5,36 +5,33 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import type { z } from "zod";
 import { toast } from "sonner";
-import { authClient, signIn } from "@/lib/auth-client";
-import { getSafeRedirectPath } from "@/lib/role-routes";
-import { signInSchema, type SignInInput } from "@/schemas/auth.schema";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    Mail,
+    Lock,
+    Eye,
+    EyeOff,
+    ArrowRight,
+    Loader2,
+    Sparkles,
+} from "lucide-react";
+import { signIn } from "@/lib/auth-client";
+import { signInSchema } from "@/schemas/auth.schema";
+import { getDashboardPath, getSafeRedirectPath } from "@/lib/role-routes";
+
+type SignInValues = z.infer<typeof signInSchema>;
 
 function SignInForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showPassword, setShowPassword] = useState(false);
 
-    const callbackUrl =
-        searchParams.get("callbackUrl") || searchParams.get("redirect");
-
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm<SignInInput>({
+    } = useForm<SignInValues>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
             email: "",
@@ -42,109 +39,137 @@ function SignInForm() {
         },
     });
 
-    const onSubmit = async (values: SignInInput) => {
-        const { error } = await signIn.email({
-            email: values.email,
+    const onSubmit = async (values: SignInValues) => {
+        const res = await signIn.email({
+            email: values.email.trim().toLowerCase(),
             password: values.password,
         });
 
-        if (error) {
-            toast.error(error.message || "Invalid email or password.");
+        if (res.error) {
+            toast.error(res.error.message || "Invalid email or password");
             return;
         }
 
-        const sessionRes = await authClient.getSession();
-        const role = (sessionRes.data?.user as { role?: string } | undefined)?.role;
+        const userRole = (res.data?.user as { role?: string } | undefined)?.role;
+        const callbackUrl = getSafeRedirectPath(searchParams.get("callbackUrl"));
+        const destination = callbackUrl || getDashboardPath(userRole);
 
-        toast.success("Signed in successfully!");
-        router.push(getSafeRedirectPath(callbackUrl, role));
+        toast.success("Welcome back to FixMate!");
+        router.push(destination);
         router.refresh();
     };
 
     return (
-        <Card className="rounded-2xl border-slate-200/80 bg-white shadow-lg shadow-slate-200/60">
-            <CardHeader className="space-y-1 text-center">
-                <CardTitle className="text-2xl font-bold text-[#102B3F]">
-                    Welcome back
-                </CardTitle>
-                <CardDescription className="text-slate-500">
+        <div className="fm-glass-float rounded-[32px] p-6 sm:p-8">
+            {/* Header */}
+            <div className="space-y-2 text-center">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--fm-primary-soft)] px-3.5 py-1 text-xs font-bold text-[var(--fm-primary-soft-text)]">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Account Access
+                </span>
+                <h2 className="fm-heading text-2xl sm:text-3xl">Welcome back</h2>
+                <p className="text-sm text-[var(--fm-ink-soft)]">
                     Sign in to manage your repairs and bookings
-                </CardDescription>
-            </CardHeader>
+                </p>
+            </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                <CardContent className="space-y-4">
-                    <div className="space-y-1.5">
-                        <Label htmlFor="email" className="text-[#102B3F]">
-                            Email Address
-                        </Label>
-                        <Input
+            {/* Form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-7 space-y-5" noValidate>
+                {/* Email Field */}
+                <div className="space-y-1.5">
+                    <label
+                        htmlFor="email"
+                        className="block text-xs font-bold uppercase tracking-wider text-[var(--fm-ink-soft)]"
+                    >
+                        Email Address
+                    </label>
+                    <div className="relative">
+                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--fm-ink-muted)]" />
+                        <input
                             id="email"
                             type="email"
-                            placeholder="name@example.com"
+                            autoComplete="email"
+                            placeholder="you@example.com"
+                            className="fm-input pl-11 pr-4"
                             {...register("email")}
-                            className="rounded-xl"
                         />
-                        {errors.email && (
-                            <p className="text-xs text-red-600">{errors.email.message}</p>
-                        )}
                     </div>
+                    {errors.email && (
+                        <p className="text-xs font-medium text-red-500">
+                            {errors.email.message}
+                        </p>
+                    )}
+                </div>
 
-                    <div className="space-y-1.5">
-                        <Label htmlFor="password" className="text-[#102B3F]">
-                            Password
-                        </Label>
-                        <div className="relative">
-                            <Input
-                                id="password"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Enter your password"
-                                {...register("password")}
-                                className="rounded-xl pr-10"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword((prev) => !prev)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                            >
-                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
-                        </div>
-                        {errors.password && (
-                            <p className="text-xs text-red-600">{errors.password.message}</p>
-                        )}
-                    </div>
-                </CardContent>
-
-                <CardFooter className="flex flex-col gap-4 pt-2">
-                    <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full rounded-xl bg-[#176B72] hover:bg-[#102B3F] text-white"
+                {/* Password Field */}
+                <div className="space-y-1.5">
+                    <label
+                        htmlFor="password"
+                        className="block text-xs font-bold uppercase tracking-wider text-[var(--fm-ink-soft)]"
                     >
-                        {isSubmitting ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Signing in...
-                            </>
-                        ) : (
-                            "Sign In"
-                        )}
-                    </Button>
-
-                    <p className="text-center text-sm text-slate-600">
-                        Don&apos;t have an account?{" "}
-                        <Link
-                            href="/sign-up"
-                            className="font-semibold text-[#176B72] hover:underline"
+                        Password
+                    </label>
+                    <div className="relative">
+                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--fm-ink-muted)]" />
+                        <input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            autoComplete="current-password"
+                            placeholder="Enter your password"
+                            className="fm-input pl-11 pr-11"
+                            {...register("password")}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-[var(--fm-ink-muted)] transition hover:text-[var(--fm-ink)]"
                         >
-                            Sign Up
-                        </Link>
-                    </p>
-                </CardFooter>
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                            ) : (
+                                <Eye className="h-4 w-4" />
+                            )}
+                        </button>
+                    </div>
+                    {errors.password && (
+                        <p className="text-xs font-medium text-red-500">
+                            {errors.password.message}
+                        </p>
+                    )}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="fm-btn-primary mt-2 h-12 w-full text-sm"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Signing In...
+                        </>
+                    ) : (
+                        <>
+                            Sign In
+                            <ArrowRight className="h-4 w-4" />
+                        </>
+                    )}
+                </button>
             </form>
-        </Card>
+
+            {/* Bottom Switcher */}
+            <div className="mt-6 border-t border-[var(--fm-divider)] pt-5 text-center text-sm text-[var(--fm-ink-soft)]">
+                Don&apos;t have an account?{" "}
+                <Link
+                    href="/sign-up"
+                    className="font-bold text-[var(--fm-primary)] transition hover:underline"
+                >
+                    Sign Up
+                </Link>
+            </div>
+        </div>
     );
 }
 
@@ -152,8 +177,8 @@ export default function SignInPage() {
     return (
         <Suspense
             fallback={
-                <div className="flex h-64 items-center justify-center rounded-2xl bg-white shadow-sm">
-                    <Loader2 className="h-6 w-6 animate-spin text-[#176B72]" />
+                <div className="fm-glass-float h-[420px] rounded-[32px] p-8">
+                    <div className="fm-shimmer h-full w-full rounded-2xl" />
                 </div>
             }
         >

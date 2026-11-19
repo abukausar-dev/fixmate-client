@@ -5,22 +5,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2, User, Wrench } from "lucide-react";
+import type { z } from "zod";
 import { toast } from "sonner";
-import { signUp } from "@/lib/auth-client";
-import { getDashboardPath } from "@/lib/role-routes";
-import { signUpSchema, type SignUpInput } from "@/schemas/auth.schema";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    User,
+    Wrench,
+    Mail,
+    Lock,
+    Eye,
+    EyeOff,
+    ArrowRight,
+    Loader2,
+    CheckCircle2,
+    Sparkles,
+} from "lucide-react";
+import { signUp } from "@/lib/auth-client";
+import { signUpSchema } from "@/schemas/auth.schema";
+import { getDashboardPath } from "@/lib/role-routes";
+
+type SignUpValues = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -32,7 +35,7 @@ export default function SignUpPage() {
         watch,
         setValue,
         formState: { errors, isSubmitting },
-    } = useForm<SignUpInput>({
+    } = useForm<SignUpValues>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
             name: "",
@@ -44,160 +47,227 @@ export default function SignUpPage() {
 
     const selectedRole = watch("role");
 
-    const onSubmit = async (values: SignUpInput) => {
-        const { error } = await signUp.email({
-            name: values.name,
-            email: values.email,
+    const onSubmit = async (values: SignUpValues) => {
+        const res = await signUp.email({
+            name: values.name.trim(),
+            email: values.email.trim().toLowerCase(),
             password: values.password,
             role: values.role,
         });
 
-        if (error) {
-            toast.error(error.message || "Could not create account. Please try again.");
+        if (res.error) {
+            toast.error(res.error.message || "Could not create account");
             return;
         }
 
-        toast.success("Account created successfully! Welcome to FixMate.");
+        toast.success("Account created! Welcome to FixMate.");
         router.push(getDashboardPath(values.role));
         router.refresh();
     };
 
     return (
-        <Card className="rounded-2xl border-slate-200/80 bg-white shadow-lg shadow-slate-200/60">
-            <CardHeader className="space-y-1 text-center">
-                <CardTitle className="text-2xl font-bold text-[#102B3F]">
-                    Create your account
-                </CardTitle>
-                <CardDescription className="text-slate-500">
+        <div className="fm-glass-float rounded-[32px] p-6 sm:p-8">
+            {/* Header */}
+            <div className="space-y-2 text-center">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--fm-primary-soft)] px-3.5 py-1 text-xs font-bold text-[var(--fm-primary-soft-text)]">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Get Started Free
+                </span>
+                <h2 className="fm-heading text-2xl sm:text-3xl">Create your account</h2>
+                <p className="text-sm text-[var(--fm-ink-soft)]">
                     Join FixMate to book repairs or offer your technician services
-                </CardDescription>
-            </CardHeader>
+                </p>
+            </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label className="text-[#102B3F]">Register as</Label>
-                        <div className="grid grid-cols-2 gap-3">
-                            <button
-                                type="button"
-                                onClick={() => setValue("role", "customer", { shouldValidate: true })}
-                                className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-3.5 text-sm font-medium transition-all ${selectedRole === "customer"
-                                        ? "border-[#176B72] bg-[#176B72]/5 text-[#102B3F]"
-                                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-                                    }`}
-                            >
-                                <User className="h-5 w-5 text-[#176B72]" />
-                                <span>Customer</span>
-                                <span className="text-xs font-normal text-slate-500">
-                                    Book repairs
-                                </span>
-                            </button>
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
+                {/* Role Selector (Customer vs Technician) */}
+                <div className="space-y-2">
+                    <span className="block text-xs font-bold uppercase tracking-wider text-[var(--fm-ink-soft)]">
+                        Register As
+                    </span>
+                    <div className="grid grid-cols-2 gap-3">
+                        {[
+                            {
+                                value: "customer" as const,
+                                title: "Customer",
+                                desc: "Book repairs",
+                                icon: User,
+                            },
+                            {
+                                value: "technician" as const,
+                                title: "Technician",
+                                desc: "Offer services",
+                                icon: Wrench,
+                            },
+                        ].map((option) => {
+                            const Icon = option.icon;
+                            const isSelected = selectedRole === option.value;
 
-                            <button
-                                type="button"
-                                onClick={() => setValue("role", "technician", { shouldValidate: true })}
-                                className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-3.5 text-sm font-medium transition-all ${selectedRole === "technician"
-                                        ? "border-[#176B72] bg-[#176B72]/5 text-[#102B3F]"
-                                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-                                    }`}
-                            >
-                                <Wrench className="h-5 w-5 text-[#176B72]" />
-                                <span>Technician</span>
-                                <span className="text-xs font-normal text-slate-500">
-                                    Offer services
-                                </span>
-                            </button>
-                        </div>
-                        {errors.role && (
-                            <p className="text-xs text-red-600">{errors.role.message}</p>
-                        )}
+                            return (
+                                <button
+                                    key={option.value}
+                                    type="button"
+                                    onClick={() =>
+                                        setValue("role", option.value, { shouldValidate: true })
+                                    }
+                                    className={`relative flex flex-col items-center gap-1.5 rounded-2xl border p-3.5 text-center transition-all ${isSelected
+                                            ? "border-[var(--fm-primary)] bg-[var(--fm-primary-soft)] shadow-sm"
+                                            : "border-[var(--fm-surface-border)] bg-[var(--fm-canvas)] hover:border-[var(--fm-primary)]/40"
+                                        }`}
+                                >
+                                    {isSelected && (
+                                        <CheckCircle2 className="absolute right-2.5 top-2.5 h-4 w-4 text-[var(--fm-primary)]" />
+                                    )}
+                                    <span
+                                        className={`flex h-9 w-9 items-center justify-center rounded-xl transition-colors ${isSelected
+                                                ? "bg-[var(--fm-primary)] text-white"
+                                                : "bg-[var(--fm-surface)] text-[var(--fm-ink-muted)]"
+                                            }`}
+                                    >
+                                        <Icon className="h-4 w-4" />
+                                    </span>
+                                    <span className="text-sm font-bold text-[var(--fm-ink)]">
+                                        {option.title}
+                                    </span>
+                                    <span className="text-[11px] font-medium text-[var(--fm-ink-soft)]">
+                                        {option.desc}
+                                    </span>
+                                </button>
+                            );
+                        })}
                     </div>
+                    {errors.role && (
+                        <p className="text-xs font-medium text-red-500">
+                            {errors.role.message}
+                        </p>
+                    )}
+                </div>
 
-                    <div className="space-y-1.5">
-                        <Label htmlFor="name" className="text-[#102B3F]">
-                            Full Name
-                        </Label>
-                        <Input
+                {/* Full Name */}
+                <div className="space-y-1.5">
+                    <label
+                        htmlFor="name"
+                        className="block text-xs font-bold uppercase tracking-wider text-[var(--fm-ink-soft)]"
+                    >
+                        Full Name
+                    </label>
+                    <div className="relative">
+                        <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--fm-ink-muted)]" />
+                        <input
                             id="name"
+                            type="text"
+                            autoComplete="name"
                             placeholder="e.g. Tariq Hasan"
+                            className="fm-input pl-11 pr-4"
                             {...register("name")}
-                            className="rounded-xl"
                         />
-                        {errors.name && (
-                            <p className="text-xs text-red-600">{errors.name.message}</p>
-                        )}
                     </div>
+                    {errors.name && (
+                        <p className="text-xs font-medium text-red-500">
+                            {errors.name.message}
+                        </p>
+                    )}
+                </div>
 
-                    <div className="space-y-1.5">
-                        <Label htmlFor="email" className="text-[#102B3F]">
-                            Email Address
-                        </Label>
-                        <Input
+                {/* Email Address */}
+                <div className="space-y-1.5">
+                    <label
+                        htmlFor="email"
+                        className="block text-xs font-bold uppercase tracking-wider text-[var(--fm-ink-soft)]"
+                    >
+                        Email Address
+                    </label>
+                    <div className="relative">
+                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--fm-ink-muted)]" />
+                        <input
                             id="email"
                             type="email"
-                            placeholder="name@example.com"
+                            autoComplete="email"
+                            placeholder="you@example.com"
+                            className="fm-input pl-11 pr-4"
                             {...register("email")}
-                            className="rounded-xl"
                         />
-                        {errors.email && (
-                            <p className="text-xs text-red-600">{errors.email.message}</p>
-                        )}
                     </div>
+                    {errors.email && (
+                        <p className="text-xs font-medium text-red-500">
+                            {errors.email.message}
+                        </p>
+                    )}
+                </div>
 
-                    <div className="space-y-1.5">
-                        <Label htmlFor="password" className="text-[#102B3F]">
-                            Password
-                        </Label>
-                        <div className="relative">
-                            <Input
-                                id="password"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Min 6 chars, 1 uppercase & 1 lowercase"
-                                {...register("password")}
-                                className="rounded-xl pr-10"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword((prev) => !prev)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                            >
-                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
-                        </div>
-                        {errors.password && (
-                            <p className="text-xs text-red-600">{errors.password.message}</p>
-                        )}
-                    </div>
-                </CardContent>
-
-                <CardFooter className="flex flex-col gap-4 pt-2">
-                    <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full rounded-xl bg-[#176B72] hover:bg-[#102B3F] text-white"
+                {/* Password */}
+                <div className="space-y-1.5">
+                    <label
+                        htmlFor="password"
+                        className="block text-xs font-bold uppercase tracking-wider text-[var(--fm-ink-soft)]"
                     >
-                        {isSubmitting ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Creating account...
-                            </>
-                        ) : (
-                            "Sign Up"
-                        )}
-                    </Button>
-
-                    <p className="text-center text-sm text-slate-600">
-                        Already have an account?{" "}
-                        <Link
-                            href="/sign-in"
-                            className="font-semibold text-[#176B72] hover:underline"
+                        Password
+                    </label>
+                    <div className="relative">
+                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--fm-ink-muted)]" />
+                        <input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            autoComplete="new-password"
+                            placeholder="Min 6 chars, 1 uppercase & 1 lowercase"
+                            className="fm-input pl-11 pr-11"
+                            {...register("password")}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-[var(--fm-ink-muted)] transition hover:text-[var(--fm-ink)]"
                         >
-                            Sign In
-                        </Link>
-                    </p>
-                </CardFooter>
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                            ) : (
+                                <Eye className="h-4 w-4" />
+                            )}
+                        </button>
+                    </div>
+                    {errors.password ? (
+                        <p className="text-xs font-medium text-red-500">
+                            {errors.password.message}
+                        </p>
+                    ) : (
+                        <p className="text-[11px] text-[var(--fm-ink-muted)]">
+                            Must be at least 6 characters with 1 uppercase and 1 lowercase
+                            letter.
+                        </p>
+                    )}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="fm-btn-primary mt-2 h-12 w-full text-sm"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Creating Account...
+                        </>
+                    ) : (
+                        <>
+                            Sign Up
+                            <ArrowRight className="h-4 w-4" />
+                        </>
+                    )}
+                </button>
             </form>
-        </Card>
+
+            {/* Bottom Switcher */}
+            <div className="mt-6 border-t border-[var(--fm-divider)] pt-5 text-center text-sm text-[var(--fm-ink-soft)]">
+                Already have an account?{" "}
+                <Link
+                    href="/sign-in"
+                    className="font-bold text-[var(--fm-primary)] transition hover:underline"
+                >
+                    Sign In
+                </Link>
+            </div>
+        </div>
     );
 }
