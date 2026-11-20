@@ -27,6 +27,8 @@ export interface BookingItem {
     problemDescription: string;
     status: BookingStatus;
     paymentStatus: PaymentStatus;
+    technicianNote?: string;
+    completedAt?: string;
     createdAt: string;
     updatedAt: string;
 }
