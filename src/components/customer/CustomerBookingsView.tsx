@@ -12,6 +12,7 @@ import {
     CheckCircle2,
     FileText,
     ExternalLink,
+    Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { apiAuthFetch } from "@/lib/api-client";
@@ -42,6 +43,7 @@ export function CustomerBookingsView() {
 
     const [cancelTarget, setCancelTarget] = useState<BookingItem | null>(null);
     const [cancelling, setCancelling] = useState(false);
+    const [payingId, setPayingId] = useState<string | null>(null);
 
     useEffect(() => {
         let active = true;
@@ -65,6 +67,40 @@ export function CustomerBookingsView() {
             active = false;
         };
     }, []);
+
+    // Show a gentle notice if the customer backed out of Stripe Checkout
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("payment") === "cancelled") {
+            toast.info("Payment was cancelled. You can try again anytime.");
+            window.history.replaceState({}, "", window.location.pathname);
+        }
+    }, []);
+
+    const handlePayNow = async (bookingId: string) => {
+        try {
+            setPayingId(bookingId);
+            const res = await apiAuthFetch<{ sessionId: string; url: string }>(
+                "/api/payments/create-checkout-session",
+                {
+                    method: "POST",
+                    body: JSON.stringify({ bookingId }),
+                }
+            );
+
+            if (!res.data?.url) {
+                throw new Error("Could not launch Stripe Checkout");
+            }
+
+            // Redirect browser to Stripe's hosted secure payment page
+            window.location.assign(res.data.url);
+        } catch (err) {
+            toast.error(
+                err instanceof Error ? err.message : "Failed to start payment"
+            );
+            setPayingId(null);
+        }
+    };
 
     const handleConfirmCancel = async () => {
         if (!cancelTarget) return;
@@ -235,15 +271,21 @@ export function CustomerBookingsView() {
                                             booking.paymentStatus === "unpaid" && (
                                                 <button
                                                     type="button"
-                                                    onClick={() =>
-                                                        toast.info(
-                                                            "Stripe Checkout payment will be connected in Milestone 9!"
-                                                        )
-                                                    }
-                                                    className="fm-btn-amber h-10 px-5 text-xs"
+                                                    disabled={payingId === booking._id}
+                                                    onClick={() => handlePayNow(booking._id)}
+                                                    className="fm-btn-amber h-10 px-5 text-xs disabled:opacity-60"
                                                 >
-                                                    <CreditCard className="h-4 w-4" />
-                                                    Pay Now (${booking.finalAmount})
+                                                    {payingId === booking._id ? (
+                                                        <>
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                            Redirecting...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <CreditCard className="h-4 w-4" />
+                                                            Pay Now (${booking.finalAmount})
+                                                        </>
+                                                    )}
                                                 </button>
                                             )}
 
