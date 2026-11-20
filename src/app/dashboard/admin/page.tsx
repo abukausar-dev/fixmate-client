@@ -1,4 +1,10 @@
-import { AuthSessionTest } from "@/components/auth/AuthSessionTest";
+import type { Metadata } from "next";
+import { AdminOverview } from "@/components/admin/AdminOverview";
+
+export const metadata: Metadata = {
+    title: "Admin Dashboard | FixMate",
+};
+
 export default function AdminDashboardPage() {
-    return <AuthSessionTest expectedRole="admin" />;
+    return <AdminOverview />;
 }
