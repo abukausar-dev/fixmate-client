@@ -1,30 +1,38 @@
-import { MongoClient, ServerApiVersion, type Db } from "mongodb";
+import { MongoClient, type Db } from "mongodb";
+import { attachDatabasePool } from "@vercel/functions";
 
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.DB_NAME || "fixmate";
+const rawUri = process.env.MONGODB_URI;
+const dbName = (process.env.DB_NAME || "fixmate").trim();
 
-if (!uri) {
-    throw new Error("MONGODB_URI is not defined in .env.local");
+if (!rawUri) {
+    throw new Error("MONGODB_URI is not defined in environment variables");
 }
+
+const uri = rawUri.trim();
 
 const globalForMongo = globalThis as unknown as {
     _fixmateMongoClient?: MongoClient;
 };
 
-export const mongoClient: MongoClient =
-    globalForMongo._fixmateMongoClient ??
-    new MongoClient(uri, {
+function createMongoClient(): MongoClient {
+    const client = new MongoClient(uri, {
         family: 4,
-        serverSelectionTimeoutMS: 30000,
-        serverApi: {
-            version: ServerApiVersion.v1,
-            strict: true,
-            deprecationErrors: true,
-        },
+        maxPoolSize: 10,
+        minPoolSize: 0,
+        maxIdleTimeMS: 10000,
+        serverSelectionTimeoutMS: 10000,
+        connectTimeoutMS: 10000,
+        socketTimeoutMS: 30000,
     });
 
-if (process.env.NODE_ENV !== "production") {
-    globalForMongo._fixmateMongoClient = mongoClient;
+    // Ensures MongoDB pool sockets stay clean across Vercel Fluid Compute suspend/resume cycles
+    attachDatabasePool(client);
+    return client;
 }
+
+export const mongoClient: MongoClient =
+    globalForMongo._fixmateMongoClient ?? createMongoClient();
+
+globalForMongo._fixmateMongoClient = mongoClient;
 
 export const db: Db = mongoClient.db(dbName);
