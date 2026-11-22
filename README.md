@@ -6,10 +6,10 @@
 
 ## Live Links & Repositories
 
-- **Live Website (Vercel):** https://fixmate-client-inky.vercel.app
-- **Live Backend API (Render):** https://fixmate-server-65ai.onrender.com
-- **Client Repository:** https://github.com/abukausar-dev/fixmate-client
-- **Server Repository:** https://github.com/abukausar-dev/fixmate-server
+- **Live Website (Vercel):** [https://fixmate-client-inky.vercel.app](https://fixmate-client-inky.vercel.app)
+- **Live Backend API (Render):** [https://fixmate-server-65ai.onrender.com](https://fixmate-server-65ai.onrender.com)
+- **Client Repository:** [https://github.com/abukausar-dev/fixmate-client](https://github.com/abukausar-dev/fixmate-client)
+- **Server Repository:** [https://github.com/abukausar-dev/fixmate-server](https://github.com/abukausar-dev/fixmate-server)
 
 > **Note:** The Express backend runs on Render's free tier, so the first API request after inactivity may take 30–50 seconds to wake up.
 
@@ -19,9 +19,9 @@
 
 | Role | Email | Password | Dashboard Route |
 | :--- | :--- | :--- | :--- |
-| **Admin** | `<admin@fixmate.com>` | `<Admin123>` | `/dashboard/admin` |
-| **Technician** | `<technician@gmail.com>` | `<Tech123>` | `/dashboard/technician` |
-| **Customer** | `<meheraabarvy@gmail.com>` | `<Mehe123>` | `/dashboard/customer` |
+| **Admin** | `admin@fixmate.com` | `Admin123` | `/dashboard/admin` |
+| **Technician** | `technician@gmail.com` | `Tech123` | `/dashboard/technician` |
+| **Customer** | `meheraabarvy@gmail.com` | `Mehe123` | `/dashboard/customer` |
 
 **Stripe Test Card (Test Mode):** `4242 4242 4242 4242` · Any future expiry (e.g., `12/29`) · Any 3-digit CVC.
 
@@ -75,9 +75,9 @@ flowchart LR
 | `better-auth` | Authentication, MongoDB adapter, session cookies, and JWT plugin |
 | `mongodb` | MongoDB Node.js driver |
 | `@vercel/functions` | `attachDatabasePool` for reliable MongoDB pooling on Vercel Fluid Compute |
-| `<ICON_PACKAGE_EG_LUCIDE_REACT>` | UI icons and FixMate wrench branding |
-| `<TOAST_PACKAGE_EG_SONNER>` | Toast notifications for auth, CRUD, status updates, and payments |
-| `<CHART_PACKAGE_EG_RECHARTS>` | Dashboard analytics charts |
+| `lucide-react` | UI icons and FixMate wrench branding |
+| `sonner` | Toast notifications for auth, CRUD, status updates, and payments |
+| `recharts` | Dashboard analytics charts |
 
 ---
 
@@ -91,7 +91,7 @@ flowchart LR
 
 ### 1. Clone and Install Dependencies
 ```bash
-git clone [text](https://github.com/abukausar-dev/fixmate-client)
+git clone https://github.com/abukausar-dev/fixmate-client
 cd fixmate-client
 pnpm install
 ```
