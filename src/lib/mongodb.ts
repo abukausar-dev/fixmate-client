@@ -10,9 +10,29 @@ if (!rawUri) {
 
 const uri = rawUri.trim();
 
-const globalForMongo = globalThis as unknown as {
-    _fixmateMongoClient?: MongoClient;
+type MongoGlobalState = {
+    client: MongoClient | null;
+    closed: boolean;
 };
+
+const globalForMongo = globalThis as unknown as {
+    _fixmateMongoState?: MongoGlobalState;
+};
+
+const mongoState: MongoGlobalState =
+    globalForMongo._fixmateMongoState ?? {
+        client: null,
+        closed: false,
+    };
+
+globalForMongo._fixmateMongoState = mongoState;
+
+function isClientClosed(client: MongoClient): boolean {
+    const internal = client as unknown as {
+        topology?: { isClosed?: () => boolean };
+    };
+    return Boolean(internal.topology?.isClosed?.());
+}
 
 function createMongoClient(): MongoClient {
     const client = new MongoClient(uri, {
@@ -25,14 +45,51 @@ function createMongoClient(): MongoClient {
         socketTimeoutMS: 30000,
     });
 
-    // Ensures MongoDB pool sockets stay clean across Vercel Fluid Compute suspend/resume cycles
+    const markClosed = () => {
+        if (mongoState.client === client) {
+            mongoState.closed = true;
+            mongoState.client = null;
+        }
+    };
+
+    client.once("topologyClosed", markClosed);
+    client.once("close", markClosed);
+
     attachDatabasePool(client);
     return client;
 }
 
-export const mongoClient: MongoClient =
-    globalForMongo._fixmateMongoClient ?? createMongoClient();
+export function getMongoClient(): MongoClient {
+    if (
+        !mongoState.client ||
+        mongoState.closed ||
+        isClientClosed(mongoState.client)
+    ) {
+        mongoState.client = createMongoClient();
+        mongoState.closed = false;
+    }
 
-globalForMongo._fixmateMongoClient = mongoClient;
+    return mongoState.client;
+}
 
-export const db: Db = mongoClient.db(dbName);
+export function getMongoDb(): Db {
+    return getMongoClient().db(dbName);
+}
+
+// Self-healing proxies: if Fluid Compute or a transient error closes the topology,
+// the next BetterAuth query automatically reconnects with a fresh MongoClient.
+export const mongoClient: MongoClient = new Proxy({} as MongoClient, {
+    get(_target, prop) {
+        const activeClient = getMongoClient();
+        const value = Reflect.get(activeClient, prop, activeClient);
+        return typeof value === "function" ? value.bind(activeClient) : value;
+    },
+});
+
+export const db: Db = new Proxy({} as Db, {
+    get(_target, prop) {
+        const activeDb = getMongoDb();
+        const value = Reflect.get(activeDb, prop, activeDb);
+        return typeof value === "function" ? value.bind(activeDb) : value;
+    },
+});
