@@ -113,6 +113,14 @@ export function Footer() {
                                     Become a Technician
                                 </Link>
                             </li>
+                            <li>
+                                <Link
+                                    href="/help"
+                                    className="inline-block py-0.5 transition hover:text-[#9CC2FF] md:inline md:py-0"
+                                >
+                                    Help Center &amp; FAQ
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
