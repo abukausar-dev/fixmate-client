@@ -14,7 +14,7 @@ const CATEGORIES = [
 
 export function Footer() {
     return (
-        <footer className="relative mt-20 overflow-hidden rounded-t-[36px] bg-[#0B1F3A] text-slate-300">
+        <footer className="relative mt-16 overflow-hidden rounded-t-[28px] bg-[#0B1F3A] text-slate-300 md:mt-20 md:rounded-t-[36px]">
             {/* Subtle ambient orb glows inside the deep navy footer */}
             <div
                 aria-hidden="true"
@@ -27,24 +27,24 @@ export function Footer() {
                 style={{ background: "radial-gradient(circle, #FFB020, transparent 70%)" }}
             />
 
-            <div className="fm-container relative z-10 py-14 sm:py-16">
-                <div className="grid grid-cols-1 gap-10 text-center md:grid-cols-2 md:text-left lg:grid-cols-4">
+            <div className="fm-container relative z-10 py-12 sm:py-16">
+                <div className="grid grid-cols-2 gap-x-6 gap-y-8 text-left md:grid-cols-2 md:gap-x-10 md:gap-y-10 md:text-left lg:grid-cols-4">
                     {/* Column 1: Brand & Socials */}
-                    <div className="flex flex-col items-center space-y-4 md:items-start">
+                    <div className="col-span-2 flex flex-col items-start space-y-4 border-b border-white/10 pb-7 md:col-span-1 md:border-b-0 md:pb-0">
                         <FixMateLogo variant="light" />
-                        <p className="max-w-xs text-sm leading-relaxed text-slate-300/90 md:max-w-none">
+                        <p className="text-sm leading-relaxed text-slate-300/90 md:max-w-none">
                             On-demand smart device and home appliance repair marketplace.
                             Track every repair step-by-step and pay online only after your
                             job is completed.
                         </p>
-                        <div className="flex items-center justify-center gap-2.5 pt-1 md:justify-start">
+                        <div className="flex items-center justify-start gap-2.5 pt-1">
                             {/* New X Icon */}
                             <a
                                 href="https://x.com"
                                 target="_blank"
                                 rel="noreferrer"
                                 aria-label="Follow FixMate on X"
-                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition hover:scale-105 hover:bg-[#2F6BFF]"
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition hover:scale-105 hover:bg-[#2F6BFF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9CC2FF]"
                             >
                                 <svg
                                     viewBox="0 0 24 24"
@@ -59,7 +59,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noreferrer"
                                 aria-label="FixMate on LinkedIn"
-                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-sm font-bold text-white transition hover:scale-105 hover:bg-[#2F6BFF]"
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-sm font-bold text-white transition hover:scale-105 hover:bg-[#2F6BFF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9CC2FF]"
                             >
                                 in
                             </a>
@@ -68,7 +68,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noreferrer"
                                 aria-label="FixMate on Facebook"
-                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-sm font-bold text-white transition hover:scale-105 hover:bg-[#2F6BFF]"
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-sm font-bold text-white transition hover:scale-105 hover:bg-[#2F6BFF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9CC2FF]"
                             >
                                 f
                             </a>
@@ -76,33 +76,39 @@ export function Footer() {
                     </div>
 
                     {/* Column 2: Quick Links */}
-                    <div>
-                        <h3 className="fm-heading text-sm uppercase tracking-wider !text-white">
+                    <div className="col-span-1">
+                        <h3 className="fm-heading text-xs uppercase tracking-wider !text-white md:text-sm">
                             Quick Links
                         </h3>
-                        <ul className="mt-4 space-y-2.5 text-sm">
+                        <ul className="mt-3.5 space-y-2.5 text-[13.5px] md:mt-4 md:text-sm">
                             <li>
-                                <Link href="/" className="transition hover:text-[#9CC2FF]">
+                                <Link
+                                    href="/"
+                                    className="inline-block py-0.5 transition hover:text-[#9CC2FF] md:inline md:py-0"
+                                >
                                     Home
                                 </Link>
                             </li>
                             <li>
                                 <Link
                                     href="/services"
-                                    className="transition hover:text-[#9CC2FF]"
+                                    className="inline-block py-0.5 transition hover:text-[#9CC2FF] md:inline md:py-0"
                                 >
                                     Browse Services
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/about" className="transition hover:text-[#9CC2FF]">
+                                <Link
+                                    href="/about"
+                                    className="inline-block py-0.5 transition hover:text-[#9CC2FF] md:inline md:py-0"
+                                >
                                     How It Works & About
                                 </Link>
                             </li>
                             <li>
                                 <Link
                                     href="/sign-up"
-                                    className="transition hover:text-[#9CC2FF]"
+                                    className="inline-block py-0.5 transition hover:text-[#9CC2FF] md:inline md:py-0"
                                 >
                                     Become a Technician
                                 </Link>
@@ -111,18 +117,19 @@ export function Footer() {
                     </div>
 
                     {/* Column 3: Popular Categories */}
-                    <div>
-                        <h3 className="fm-heading text-sm uppercase tracking-wider !text-white">
+                    <div className="col-span-1">
+                        <h3 className="fm-heading text-xs uppercase tracking-wider !text-white md:text-sm">
                             Repair Categories
                         </h3>
-                        <ul className="mt-4 grid grid-cols-1 gap-2 text-sm">
+                        <ul className="mt-3.5 grid grid-cols-1 gap-2 text-[13.5px] md:mt-4 md:text-sm">
                             {CATEGORIES.map((category) => (
                                 <li key={category}>
                                     <Link
                                         href={`/services?category=${encodeURIComponent(category)}`}
-                                        className="transition hover:text-[#9CC2FF]"
+                                        className="inline-block py-0.5 transition hover:text-[#9CC2FF] md:inline md:py-0"
                                     >
-                                        {category} Repair
+                                        {category}
+                                        <span className="hidden sm:inline"> Repair</span>
                                     </Link>
                                 </li>
                             ))}
@@ -130,29 +137,41 @@ export function Footer() {
                     </div>
 
                     {/* Column 4: Contact Info */}
-                    <div>
-                        <h3 className="fm-heading text-sm uppercase tracking-wider !text-white">
+                    <div className="col-span-2 rounded-2xl border border-white/10 bg-white/[0.04] p-5 md:col-span-1 md:rounded-none md:border-0 md:bg-transparent md:p-0">
+                        <h3 className="fm-heading text-xs uppercase tracking-wider !text-white md:text-sm">
                             Contact & Support
                         </h3>
                         <ul className="mt-4 space-y-3 text-sm">
-                            <li className="flex items-start justify-center gap-2.5 md:justify-start">
-                                <MapPin className="h-4 w-4 shrink-0 text-[#FFB020]" />
-                                <span>Level 4, Gulshan Avenue, Dhaka 1212, Bangladesh</span>
+                            <li className="flex items-start justify-start gap-2.5">
+                                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#FFB020] md:mt-0" />
+                                <span className="leading-relaxed md:leading-normal">
+                                    Level 4, Gulshan Avenue, Dhaka 1212, Bangladesh
+                                </span>
                             </li>
-                            <li className="flex items-center justify-center gap-2.5 md:justify-start">
+                            <li className="flex items-center justify-start gap-2.5">
                                 <Phone className="h-4 w-4 shrink-0 text-[#2BC9A0]" />
-                                <span>+880 1700-123456</span>
+                                <a
+                                    href="tel:+8801700123456"
+                                    className="transition hover:text-[#9CC2FF]"
+                                >
+                                    +880 1700-123456
+                                </a>
                             </li>
-                            <li className="flex items-center justify-center gap-2.5 md:justify-start">
+                            <li className="flex items-center justify-start gap-2.5">
                                 <Mail className="h-4 w-4 shrink-0 text-[#9CC2FF]" />
-                                <span>support@fixmate.com</span>
+                                <a
+                                    href="mailto:support@fixmate.com"
+                                    className="transition hover:text-[#9CC2FF]"
+                                >
+                                    support@fixmate.com
+                                </a>
                             </li>
                         </ul>
                     </div>
                 </div>
 
                 {/* Thin Divider & Copyright */}
-                <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-slate-400 sm:flex-row">
+                <div className="mt-8 flex flex-col items-start justify-between gap-1.5 border-t border-white/10 pt-6 text-left text-xs text-slate-400 sm:mt-12 sm:flex-row sm:items-center sm:gap-4">
                     <p>© 2026 FixMate Inc. All rights reserved.</p>
                     <p>Pay-After-Completion Verified Repair Marketplace</p>
                 </div>
